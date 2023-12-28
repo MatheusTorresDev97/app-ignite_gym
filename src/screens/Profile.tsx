@@ -8,6 +8,7 @@ import {
   Text,
   Heading,
 } from "native-base";
+import * as ImagePicker from "expo-image-picker";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -18,6 +19,10 @@ const PHOTO_SIZE = 33;
 
 export const Profile = () => {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+
+  const handleUserPhotoSelected = async () => {
+    await ImagePicker.launchImageLibraryAsync();
+  };
 
   return (
     <VStack flex={1}>
@@ -41,7 +46,7 @@ export const Profile = () => {
             />
           )}
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleUserPhotoSelected}>
             <Text
               color="green.500"
               fontWeight="bold"
