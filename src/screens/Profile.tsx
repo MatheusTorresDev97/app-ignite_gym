@@ -19,14 +19,23 @@ const PHOTO_SIZE = 33;
 
 export const Profile = () => {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    "https://github.com/matheustorresdev97.png"
+  );
 
   const handleUserPhotoSelected = async () => {
-    await ImagePicker.launchImageLibraryAsync({
+    const photoSelected = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
       aspect: [4, 4],
       allowsEditing: true,
     });
+
+    if (photoSelected.canceled) {
+      return;
+    }
+
+    setUserPhoto(photoSelected.assets[0].uri);
   };
 
   return (
@@ -45,7 +54,7 @@ export const Profile = () => {
             />
           ) : (
             <UserPhoto
-              source={{ uri: "https://github.com/matheustorresdev97.png" }}
+              source={{ uri: userPhoto }}
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
