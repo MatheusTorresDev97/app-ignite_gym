@@ -3,6 +3,7 @@ import { FlatList, HStack, Heading, Text, VStack } from "native-base";
 
 import { HomeHeader } from "@components/HomeHeader";
 import { Group } from "@components/Group";
+import { ExerciseCard } from "@components/ExerciseCard";
 
 export const Home = () => {
   const [groupSelected, setGroupSelected] = useState("Costas");
@@ -16,11 +17,11 @@ export const Home = () => {
     <VStack flex={1}>
       <HomeHeader />
 
-      <FlatList
+      <FlatList 
         data={groups}
-        keyExtractor={(item) => item}
+        keyExtractor={item => item}
         renderItem={({ item }) => (
-          <Group
+          <Group 
             name={item}
             isActive={groupSelected === item}
             onPress={() => setGroupSelected(item)}
@@ -45,6 +46,9 @@ export const Home = () => {
             4
           </Text>
         </HStack>
+
+        <ExerciseCard />
+        <ExerciseCard />
       </VStack>
     </VStack>
   );
