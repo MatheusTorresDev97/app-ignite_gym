@@ -7,8 +7,10 @@ import {
   Skeleton,
   Text,
   Heading,
+  useToast,
 } from "native-base";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -23,20 +25,47 @@ export const Profile = () => {
     "https://github.com/matheustorresdev97.png"
   );
 
-  const handleUserPhotoSelected = async () => {
-    const photoSelected = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-      aspect: [4, 4],
-      allowsEditing: true,
-    });
+  const toast = useToast();
 
-    if (photoSelected.canceled) {
-      return;
+  async function handleUserPhotoSelected() {
+    setPhotoIsLoading(true);
+
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+        selectionLimit: 1,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri,
+          { size: true }
+        );
+
+        if (photoInfo.exists && photoInfo.size > 1024 * 1024 * 1) {
+          return toast.show({
+            title: "A imagem deve ter no máximo 3MB",
+            placement: "top",
+            duration: 3000,
+            bgColor: "red.500",
+          });
+        }
+
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
     }
-
-    setUserPhoto(photoSelected.assets[0].uri);
-  };
+  }
 
   return (
     <VStack flex={1}>
