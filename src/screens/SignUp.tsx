@@ -16,7 +16,11 @@ type FormDataProps = {
 };
 
 export const SignUp = () => {
-  const { control, handleSubmit } = useForm<FormDataProps>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>();
 
   const navigation = useNavigation();
 
@@ -64,16 +68,25 @@ export const SignUp = () => {
             control={control}
             name="name"
             rules={{
-              required: 'Informe o nome.'
+              required: "Informe o nome.",
             }}
             render={({ field: { onChange, value } }) => (
               <Input placeholder="Nome" onChangeText={onChange} value={value} />
             )}
           />
 
+          <Text color="white">{errors.name?.message}</Text>
+
           <Controller
             control={control}
             name="email"
+            rules={{
+              required: "Informe o email.",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "E-mail inválido",
+              },
+            }}
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="E-mail"
@@ -84,6 +97,8 @@ export const SignUp = () => {
               />
             )}
           />
+
+          <Text color="white">{errors.email?.message}</Text>
 
           <Controller
             control={control}
