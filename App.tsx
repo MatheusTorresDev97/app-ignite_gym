@@ -8,9 +8,11 @@ import {
 
 import { Routes } from "@routes/index";
 
-import { THEME } from "./src/theme";
+import { AuthContext } from "@contexts/AuthContext";
 
+import { THEME } from "./src/theme";
 import { Loading } from "@components/Loading";
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
@@ -22,7 +24,9 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
+      <AuthContext.Provider value={{}}>
       {fontsLoaded ? <Routes /> : <Loading />}
+      </AuthContext.Provider>
     </NativeBaseProvider>
   );
 }
