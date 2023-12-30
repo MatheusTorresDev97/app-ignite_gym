@@ -10,12 +10,16 @@ import BackgroundImg from "@assets/background.png";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { useAuth } from "@hooks/useAuth";
+
 type FormData = {
   email: string;
   password: string;
 };
 
 export const SignIn = () => {
+  const { singIn } = useAuth();
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
   const {
@@ -29,7 +33,7 @@ export const SignIn = () => {
   };
 
   function handleSignIn({ email, password }: FormData) {
-    console.log(email, password);
+    singIn(email, password);
   }
 
   return (
