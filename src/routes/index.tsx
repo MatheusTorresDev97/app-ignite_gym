@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { Box, useTheme } from "native-base";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
@@ -20,7 +19,7 @@ export const Routes = () => {
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        <AuthRoutes />
+        {user.id ? <AppRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );

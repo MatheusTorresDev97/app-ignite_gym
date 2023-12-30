@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
@@ -27,6 +28,8 @@ type FormData = {
 };
 
 export const SignIn = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { singIn } = useAuth();
 
   const toast = useToast();
@@ -45,6 +48,7 @@ export const SignIn = () => {
 
   const handleSignIn = async ({ email, password }: FormData) => {
     try {
+      setIsLoading(true);
       await singIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
@@ -58,6 +62,7 @@ export const SignIn = () => {
         placement: "top",
         bgColor: "red.500",
       });
+      setIsLoading(false);
     }
   };
 
@@ -127,9 +132,9 @@ export const SignIn = () => {
         </Center>
 
         <Button
-          title="Criar conta"
-          variant="outline"
-          onPress={handleNewAccount}
+          title="Acessar"
+          onPress={handleSubmit(handleSignIn)}
+          isLoading={isLoading}
         />
       </VStack>
     </ScrollView>
