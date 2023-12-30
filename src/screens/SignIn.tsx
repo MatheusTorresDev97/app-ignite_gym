@@ -32,9 +32,9 @@ export const SignIn = () => {
     navigation.navigate("signUp");
   };
 
-  function handleSignIn({ email, password }: FormData) {
-    singIn(email, password);
-  }
+  const handleSignIn = async ({ email, password }: FormData) => {
+    await singIn(email, password);
+  };
 
   return (
     <ScrollView
