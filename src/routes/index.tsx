@@ -4,8 +4,8 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
 import { AuthRoutes } from "./AuthRoutes";
 import { AppRoutes } from "./AppRoutes";
-import { AuthContext } from "@contexts/AuthContext";
 
+import { useAuth } from "@hooks/useAuth";
 
 export const Routes = () => {
   const { colors } = useTheme();
@@ -13,7 +13,9 @@ export const Routes = () => {
 
   theme.colors.background = colors.gray[700];
 
-  const contextData = useContext(AuthContext)
+  const { user } = useAuth();
+
+  console.log("USUÁRIO LOGADO =>", user);
 
   return (
     <Box flex={1} bg="gray.700">
