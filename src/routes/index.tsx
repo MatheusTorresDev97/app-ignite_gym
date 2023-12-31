@@ -5,6 +5,7 @@ import { AuthRoutes } from "./AuthRoutes";
 import { AppRoutes } from "./AppRoutes";
 
 import { useAuth } from "@hooks/useAuth";
+import { Loading } from "@components/Loading";
 
 export const Routes = () => {
   const { colors } = useTheme();
@@ -12,9 +13,11 @@ export const Routes = () => {
 
   theme.colors.background = colors.gray[700];
 
-  const { user } = useAuth();
+  const { user, isLoadingUserStorageData } = useAuth();
 
-  console.log("USUÁRIO LOGADO =>", user);
+  if (isLoadingUserStorageData) {
+    return <Loading />;
+  }
 
   return (
     <Box flex={1} bg="gray.700">
