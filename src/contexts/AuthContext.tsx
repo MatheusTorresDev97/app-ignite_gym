@@ -2,11 +2,16 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 import { api } from "@services/api";
 import { UserDTO } from "@dtos/UserDTO";
-import { storageUserGet, storageUserSave } from "@storage/storageUser";
+import {
+  storageUserGet,
+  storageUserRemove,
+  storageUserSave,
+} from "@storage/storageUser";
 
 export type AuthContextDataProps = {
   user: UserDTO;
-  singIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
   isLoadingUserStorageData: boolean;
 };
 
@@ -23,7 +28,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] =
     useState(true);
 
-  const singIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
       const { data } = await api.post("/sessions", { email, password });
 
@@ -33,6 +38,18 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       }
     } catch (error) {
       throw error;
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      setIsLoadingUserStorageData(true);
+      setUser({} as UserDTO);
+      await storageUserRemove();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorageData(false);
     }
   };
 
@@ -58,7 +75,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     <AuthContext.Provider
       value={{
         user,
-        singIn,
+        signIn,
+        signOut,
         isLoadingUserStorageData,
       }}
     >

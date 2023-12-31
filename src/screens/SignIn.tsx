@@ -30,7 +30,7 @@ type FormData = {
 export const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { singIn } = useAuth();
+  const { signIn } = useAuth();
 
   const toast = useToast();
 
@@ -49,7 +49,7 @@ export const SignIn = () => {
   const handleSignIn = async ({ email, password }: FormData) => {
     try {
       setIsLoading(true);
-      await singIn(email, password);
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
 
