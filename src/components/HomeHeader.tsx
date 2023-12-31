@@ -4,8 +4,11 @@ import { TouchableOpacity } from "react-native";
 
 import { UserPhoto } from "./UserPhoto";
 
+import { useAuth } from "@hooks/useAuth";
 
 export const HomeHeader = () => {
+  const { user } = useAuth();
+
   return (
     <HStack bg="gray.600" pt={16} pb={5} px={8} alignItems="center">
       <UserPhoto
@@ -14,24 +17,18 @@ export const HomeHeader = () => {
         alt="Imagem do usuário"
         mr={4}
       />
-       <VStack flex={1}>
+      <VStack flex={1}>
         <Text color="gray.100" fontSize="md">
           Olá,
         </Text>
 
         <Heading color="gray.100" fontSize="md" fontFamily="heading">
-          Matheus
+          {user.name}
         </Heading>
       </VStack>
 
-      
       <TouchableOpacity>
-        <Icon 
-          as={MaterialIcons}
-          name="logout"
-          color="gray.200"
-          size={7}
-        />
+        <Icon as={MaterialIcons} name="logout" color="gray.200" size={7} />
       </TouchableOpacity>
     </HStack>
   );
