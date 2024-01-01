@@ -3,9 +3,13 @@ import { HStack, Heading, Icon, Image, Text, VStack } from "native-base";
 
 import { Entypo } from "@expo/vector-icons";
 
-type Props = TouchableOpacityProps & {};
+import { ExerciseDTO } from '@dtos/ExerciseDTO';
 
-export const ExerciseCard = ({ ...props }: Props) => {
+type Props = TouchableOpacityProps & {
+  data: ExerciseDTO;
+};
+
+export const ExerciseCard = ({ data, ...props }: Props) => {
   return (
     <TouchableOpacity {...props}>
       <HStack
@@ -30,11 +34,11 @@ export const ExerciseCard = ({ ...props }: Props) => {
 
         <VStack flex={1}>
           <Heading fontSize="lg" color="white" fontFamily="heading">
-            Remanda unilateral
+          {data.name}
           </Heading>
 
           <Text fontSize="sm" color="gray.200" mt={1} numberOfLines={2}>
-            3 séries x 12 repetições
+          {data.series} séries x {data.repetitions} repetições
           </Text>
         </VStack>
 
