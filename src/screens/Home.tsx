@@ -9,10 +9,11 @@ import { AppNavigatorRoutesProps } from "@routes/AppRoutes";
 
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
 
 export const Home = () => {
   const [groups, setGroups] = useState<string[]>([]);
-  const [exercises, setExercises] = useState([]);
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState("Costas");
 
   const toast = useToast();
@@ -43,7 +44,7 @@ export const Home = () => {
   const fetchExercisesByGroup = async () => {
     try {
       const response = await api.get(`/exercises/bygroup/${groupSelected}`);
-      console.log(response.data);
+      setExercises(response.data);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
@@ -107,7 +108,7 @@ export const Home = () => {
 
         <FlatList
           data={exercises}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ExerciseCard onPress={handleOpenExerciseDetails} />
           )}
