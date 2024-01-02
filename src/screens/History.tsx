@@ -50,8 +50,8 @@ export const History = () => {
 
       <SectionList
         sections={exercises}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => <HistoryCard />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <HistoryCard data={item} />}
         renderSectionHeader={({ section }) => (
           <Heading
             color="gray.200"
