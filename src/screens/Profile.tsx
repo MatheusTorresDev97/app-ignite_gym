@@ -26,8 +26,8 @@ type FormDataProps = {
   name: string;
   email: string;
   password: string;
-  oldPassword: string;
-  newPassword: string;
+  old_password: string;
+  confirm_password: string;
 };
 
 export const Profile = () => {
@@ -38,14 +38,14 @@ export const Profile = () => {
 
   const toast = useToast();
   const { user } = useAuth();
-  const { control } = useForm<FormDataProps>({
+  const { control, handleSubmit } = useForm<FormDataProps>({
     defaultValues: {
       name: user.name,
       email: user.email,
     },
   });
 
-  async function handleUserPhotoSelected() {
+  const handleUserPhotoSelected = async () => {
     setPhotoIsLoading(true);
 
     try {
@@ -83,7 +83,11 @@ export const Profile = () => {
     } finally {
       setPhotoIsLoading(false);
     }
-  }
+  };
+
+  const handleProfileUpdate = async (data: FormDataProps) => {
+    console.log(data);
+  };
 
   return (
     <VStack flex={1}>
@@ -157,17 +161,50 @@ export const Profile = () => {
             Alterar senha
           </Heading>
 
-          <Input bg="gray.600" placeholder="Senha antiga" secureTextEntry />
-
-          <Input bg="gray.600" placeholder="Nova senha" secureTextEntry />
-
-          <Input
-            bg="gray.600"
-            placeholder="Confirme a nova senha"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="old_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="Senha antiga"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
           />
 
-          <Button title="Atualizar" mt={4} />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="Nova senha"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="confirm_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="Confirme a nova senha"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
+          />
+
+          <Button
+            title="Atualizar"
+            mt={4}
+            onPress={handleSubmit(handleProfileUpdate)}
+          />
         </Center>
       </ScrollView>
     </VStack>
