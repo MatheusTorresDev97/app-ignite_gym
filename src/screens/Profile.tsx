@@ -112,7 +112,7 @@ export const Profile = () => {
           });
         }
 
-        const fileExtension = photoSelected.assets[0].uri.split('.').pop();
+        const fileExtension = photoSelected.assets[0].uri.split(".").pop();
 
         const photoFile = {
           name: `${user.name}.${fileExtension}`.toLowerCase(),
@@ -124,11 +124,21 @@ export const Profile = () => {
 
         userPhotoUploadForm.append("avatar", photoFile);
 
-        await api.patch("/users/avatar", userPhotoUploadForm, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const avatarUpdtedResponse = await api.patch(
+          "/users/avatar",
+          userPhotoUploadForm,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const userUpdated = user;
+
+        userUpdated.avatar = avatarUpdtedResponse.data.avatar;
+
+        await updateUserProfile(userUpdated);
 
         toast.show({
           title: "Foto atualizada!",
