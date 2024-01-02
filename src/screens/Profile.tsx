@@ -9,8 +9,11 @@ import {
   Heading,
   useToast,
 } from "native-base";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import * as yup from "yup";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -18,19 +21,47 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
 import { useAuth } from "@hooks/useAuth";
-import { Controller, useForm } from "react-hook-form";
+
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 const PHOTO_SIZE = 33;
 
 type FormDataProps = {
   name: string;
   email: string;
-  password: string;
-  old_password: string;
-  confirm_password: string;
+  password?: string | null | undefined;
+  confirm_password?: string | null | undefined;
+  old_password?: string | null;
 };
 
+const profileSchema = yup.object({
+  name: yup.string().required("Informe o nome."),
+  email: yup.string().required("Informe o email.").email(),
+  old_password: yup
+    .string()
+    .required("Informe a senha antiga.")
+    .nullable()
+    .transform((value) => (!!value ? value : null)),
+  password: yup
+    .string()
+    .min(6, "A senha deve ter pelo menos 6 dígitos.")
+    .nullable()
+    .transform((value) => (!!value ? value : null)),
+  confirm_password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .oneOf([yup.ref("password"), ""], "A confirmação de senha não confere.")
+    .when("password", {
+      is: (Field: any) => Field,
+      then: (schema) =>
+        schema.nullable().required("Informe a confirmação da senha."),
+    }),
+});
+
 export const Profile = () => {
+  const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/matheustorresdev97.png"
@@ -38,11 +69,16 @@ export const Profile = () => {
 
   const toast = useToast();
   const { user } = useAuth();
-  const { control, handleSubmit } = useForm<FormDataProps>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
     defaultValues: {
       name: user.name,
       email: user.email,
     },
+    resolver: yupResolver<FormDataProps>(profileSchema),
   });
 
   const handleUserPhotoSelected = async () => {
@@ -86,7 +122,29 @@ export const Profile = () => {
   };
 
   const handleProfileUpdate = async (data: FormDataProps) => {
-    console.log(data);
+    try {
+      setIsUpdating(true);
+      await api.put("/users", data);
+
+      toast.show({
+        title: "Perfil atualizado com sucesso!",
+        placement: "top",
+        bgColor: "green.500",
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível atualizar os dados. Tente novamente mais tarde.";
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -132,6 +190,7 @@ export const Profile = () => {
                 placeholder="Nome"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.name?.message}
               />
             )}
           />
@@ -183,6 +242,7 @@ export const Profile = () => {
                 placeholder="Nova senha"
                 secureTextEntry
                 onChangeText={onChange}
+                errorMessage={errors.password?.message}
               />
             )}
           />
@@ -196,6 +256,7 @@ export const Profile = () => {
                 placeholder="Confirme a nova senha"
                 secureTextEntry
                 onChangeText={onChange}
+                errorMessage={errors.confirm_password?.message}
               />
             )}
           />
@@ -204,6 +265,7 @@ export const Profile = () => {
             title="Atualizar"
             mt={4}
             onPress={handleSubmit(handleProfileUpdate)}
+            isLoading={isUpdating}
           />
         </Center>
       </ScrollView>
